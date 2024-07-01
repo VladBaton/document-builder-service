@@ -1,6 +1,7 @@
 package com.github.vladbaton.resource;
 
 
+import com.github.vladbaton.resource.dto.UserDTO;
 import com.github.vladbaton.resource.pojo.RegistrationRequest;
 import com.github.vladbaton.resource.pojo.UpdateRequest;
 import com.github.vladbaton.resource.pojo.UserForUserResponse;
@@ -11,6 +12,8 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -35,8 +38,8 @@ public class UserResource {
     @Operation(description = "Регистрация юзера")
     @APIResponse(responseCode = "200", description = "Юзер зарегистрирован")
     @APIResponse(responseCode = "400", description = "Пользователь ввёл фигню")
-    public Response register(RegistrationRequest request) throws ConstraintViolationException {
-        userService.registerUser(request.getUser());
+    public Response register(@Valid UserDTO userDTO) throws ConstraintViolationException {
+        userService.registerUser(userDTO);
         return Response.status(Response.Status.CREATED).build();
     }
 

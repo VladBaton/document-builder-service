@@ -43,63 +43,49 @@ public class DocService {
     @Transactional
     public void uploadDoc(MultipartFormDataInput input, String username)
             throws FailedToUploadFileException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UserNotFoundByUsernameException(username);
-        }
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundByUsernameException(username));
         Map<String, List<InputPart>> uploadForm = input.getFormDataMap();
-        Doc doc = null;
         if (uploadForm.get("file") == null) {
             throw new FailedToUploadFileException();
         }
         for (InputPart inputPart : uploadForm.get("file")) {
-            MultivaluedMap<String, String> header = inputPart.getHeaders();
-            String filename = getFilename(header);
-            Doc foundDoc = docRepository.findByUserAndFilename(user, filename);
+            String filename = getFilename(inputPart.getHeaders());
             try {
                 InputStream inputStream = inputPart.getBody(InputStream.class, null);
                 writeFile(inputStream, filename, username);
             } catch (Exception e) {
                 throw new FailedToUploadFileException(filename, e.getMessage());
             }
-            if (foundDoc == null) {
-                doc = new Doc();
-                doc.setUser(user);
-                doc.setFileReference(new File(uploadDirectory + File.separator + username).getAbsolutePath() + File.separator + filename);
-                user.getDocs().add(doc);
-                docRepository.persistAndFlush(doc);
-                userRepository.persistAndFlush(user);
-            } else {
-                foundDoc.setLastUpdatedDate(new Date());
-            }
+            docRepository.findByUserAndFilename(user, filename).ifPresentOrElse(
+                    (foundDoc) -> {
+                        foundDoc.setLastUpdatedDate(new Date());
+                    },
+                    () -> {
+                        Doc doc = new Doc();
+                        doc.setUser(user);
+                        doc.setFileReference(new File(uploadDirectory + File.separator + username).getAbsolutePath() + File.separator + filename);
+                        user.getDocs().add(doc);
+                        docRepository.persistAndFlush(doc);
+                        userRepository.persistAndFlush(user);
+                    }
+            );
         }
     }
 
     public Doc getDocByUsernameAndFilename(String username, String filename)
             throws UserNotFoundByUsernameException, FileNotFoundException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UserNotFoundByUsernameException(username);
-        }
-        Doc doc = docRepository.findByUserAndFilename(user, filename);
-        if (doc == null) {
-            throw new FileNotFoundException(username, filename);
-        }
-        return doc;
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundByUsernameException(username));
+        return docRepository.findByUserAndFilename(user, filename).orElseThrow(() -> new FileNotFoundException(filename));
     }
 
     public Set<Doc> getListOfDocs(String username) throws UserNotFoundByUsernameException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UserNotFoundByUsernameException(username);
-        }
-        return user.getDocs();
+        return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundByUsernameException(username)).getDocs();
     }
 
     public InputStream downloadDoc(String username, String filename)
             throws UserNotFoundByUsernameException, FileNotFoundException {
-        User user = findUserByUsername(username);
-        Doc foundDoc = findDocByUserAndFilename(user, filename);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundByUsernameException(username));
+        Doc foundDoc = docRepository.findByUserAndFilename(user, filename).orElseThrow(() -> new FileNotFoundException(filename));
         FileInputStream fileStream = null;
         try {
             fileStream = new FileInputStream(foundDoc.getFileReference());
@@ -110,42 +96,12 @@ public class DocService {
     }
 
     public ByteArrayOutputStream buildDocument(String username, String filename, List<BuildDocumentRequestEntry> replacements) {
-        User user = findUserByUsername(username);
-        Doc foundDoc = findDocByUserAndFilename(user, filename);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundByUsernameException(username));
+        Doc foundDoc = docRepository.findByUserAndFilename(user, filename).orElseThrow(() -> new FileNotFoundException(filename));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try (InputStream docxInputStream = new FileInputStream(foundDoc.getFileReference());
              XWPFDocument document = new XWPFDocument(docxInputStream);) {
-            List<ReplacementEntry> listOfReplacementEntries = new ArrayList<>();
-            for(BuildDocumentRequestEntry replacement: replacements) {
-                for (XWPFParagraph paragraph : document.getParagraphs()) {
-                    List<XWPFRun> runs = paragraph.getRuns();
-                    for (XWPFRun run : runs) {
-                        String text = run.getText(0);
-                        if(text.contains(replacement.getTarget())) {
-                            listOfReplacementEntries.add(
-                                    new ReplacementEntry(
-                                            run, replacement.getTarget(), replacement.getReplacement()
-                                    ));
-                        }
-                    }
-                }
-                for(XWPFTable table: document.getTables()) {
-                    for(XWPFTableRow row: table.getRows()) {
-                        for(XWPFTableCell cell: row.getTableCells()) {
-                            for(XWPFParagraph paragraph: cell.getParagraphs()) {
-                                for(XWPFRun run: paragraph.getRuns()) {
-                                    if(run.getText(0).contains(replacement.getTarget())) {
-                                        listOfReplacementEntries.add(
-                                                new ReplacementEntry(
-                                                        run, replacement.getTarget(), replacement.getReplacement()
-                                                ));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            List<ReplacementEntry> listOfReplacementEntries = findReplacementEntries(document, replacements);
             for(ReplacementEntry entry: listOfReplacementEntries) {
                 String newText = entry.getRun().text().replace(entry.getTarget(), entry.getReplacement());
                 entry.getRun().setText(newText, 0);
@@ -155,22 +111,6 @@ public class DocService {
             throw new DocumentBuildingError(filename);
         }
         return outputStream;
-    }
-
-    private User findUserByUsername(String username) throws UserNotFoundByUsernameException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UserNotFoundByUsernameException(username);
-        }
-        return user;
-    }
-
-    private Doc findDocByUserAndFilename(User user, String filename) {
-        Doc foundDoc = docRepository.findByUserAndFilename(user, filename);
-        if (foundDoc == null) {
-            throw new FileNotFoundException(filename);
-        }
-        return foundDoc;
     }
 
     private String getFilename(MultivaluedMap<String, String> header) {
@@ -190,5 +130,40 @@ public class DocService {
         file.mkdirs();
         file = new File(file.getAbsolutePath() + File.separator + filename);
         Files.write(Paths.get(file.getAbsolutePath()), bytes, StandardOpenOption.CREATE);
+    }
+
+    private List<ReplacementEntry> findReplacementEntries(XWPFDocument document, List<BuildDocumentRequestEntry> replacements) {
+        List<ReplacementEntry> listOfReplacementEntries = new ArrayList<>();
+        for(BuildDocumentRequestEntry replacement: replacements) {
+            for (XWPFParagraph paragraph : document.getParagraphs()) {
+                List<XWPFRun> runs = paragraph.getRuns();
+                for (XWPFRun run : runs) {
+                    String text = run.getText(0);
+                    if(text.contains(replacement.getTarget())) {
+                        listOfReplacementEntries.add(
+                                new ReplacementEntry(
+                                        run, replacement.getTarget(), replacement.getReplacement()
+                                ));
+                    }
+                }
+            }
+            for(XWPFTable table: document.getTables()) {
+                for(XWPFTableRow row: table.getRows()) {
+                    for(XWPFTableCell cell: row.getTableCells()) {
+                        for(XWPFParagraph paragraph: cell.getParagraphs()) {
+                            for(XWPFRun run: paragraph.getRuns()) {
+                                if(run.getText(0).contains(replacement.getTarget())) {
+                                    listOfReplacementEntries.add(
+                                            new ReplacementEntry(
+                                                    run, replacement.getTarget(), replacement.getReplacement()
+                                            ));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return listOfReplacementEntries;
     }
 }

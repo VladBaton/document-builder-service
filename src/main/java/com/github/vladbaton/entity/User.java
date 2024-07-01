@@ -18,21 +18,15 @@ public class User extends PanacheEntityBase {
     @GeneratedValue
     private Long userId;
 
-    @Column(name = "USERNAME", nullable = false, unique = true)
-    @NotBlank
     @io.quarkus.security.jpa.Username
-    @Username
+    @Column(name = "USERNAME", nullable = false, unique = true)
     private String username;
 
-    @Column(name = "USERPASSWORD", nullable = false)
-    @NotBlank
     @Password(PasswordType.CLEAR)
-    @com.github.vladbaton.constraint.Password
+    @Column(name = "USERPASSWORD", nullable = false)
     private String password;
 
     @Column(name = "USEREMAIL", nullable = false, unique = true)
-    @NotBlank
-    @Email
     private String email;
 
     @Column(name = "USERROLE")
@@ -41,7 +35,6 @@ public class User extends PanacheEntityBase {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Doc> docs;
-
 
     public String getPassword() {
         return password;

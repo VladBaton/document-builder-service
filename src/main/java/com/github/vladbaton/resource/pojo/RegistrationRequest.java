@@ -1,15 +1,18 @@
 package com.github.vladbaton.resource.pojo;
 
 import com.github.vladbaton.entity.User;
+import com.github.vladbaton.resource.dto.UserDTO;
+import jakarta.enterprise.context.RequestScoped;
 
+@RequestScoped
 public class RegistrationRequest {
-    private User user;
+    private UserDTO user;
 
-    public User getUser() {
+    public UserDTO getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDTO user) {
         this.user = user;
     }
 }
