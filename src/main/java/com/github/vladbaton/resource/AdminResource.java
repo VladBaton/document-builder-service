@@ -8,6 +8,7 @@ import com.github.vladbaton.exception.UserNotFoundByIdException;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -70,7 +71,7 @@ public class AdminResource {
     @Path("/paginated")
     @GET
     @RolesAllowed("Admin")
-    public Response getUsersPaginated(PaginatedUsersForAdminRequest request) {
+    public Response getUsersPaginated(@Valid PaginatedUsersForAdminRequest request) {
         return Response
                 .ok(new UsersForAdminResponse(adminService.getPaginatedUsers(request.getPageSize(), request.getPage(), request.getSortBy())))
                 .build();

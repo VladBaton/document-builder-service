@@ -1,8 +1,17 @@
 package com.github.vladbaton.resource.dto;
 
+import com.github.vladbaton.constraint.FieldExists;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class sortByDTO {
+    @NotBlank
+    @NotNull
+    @FieldExists
     private String field;
-    private String order;
+
+    @NotNull
+    private SortOrder order;
 
     public String getField() {
         return field;
@@ -12,11 +21,11 @@ public class sortByDTO {
         this.field = field;
     }
 
-    public String getOrder() {
+    public SortOrder getOrder() {
         return order;
     }
 
-    public void setOrder(String order) {
+    public void setOrder(SortOrder order) {
         this.order = order;
     }
 }

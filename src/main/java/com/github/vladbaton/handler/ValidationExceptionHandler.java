@@ -12,7 +12,7 @@ public class ValidationExceptionHandler implements ExceptionMapper<ValidationExc
     @Override
     public Response toResponse(final ValidationException exception) {
         return Response.status(Response.Status.BAD_REQUEST)
-                .entity("Введённые данные неверны!")
+                .entity("Введённые данные неверны! " + exception.getClass())
                 .build();
     }
 }
