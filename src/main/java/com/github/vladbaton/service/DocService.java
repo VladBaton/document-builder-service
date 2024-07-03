@@ -2,8 +2,8 @@ package com.github.vladbaton.service;
 
 import com.github.vladbaton.entity.Doc;
 import com.github.vladbaton.entity.User;
-import com.github.vladbaton.exception.*;
 import com.github.vladbaton.exception.FileNotFoundException;
+import com.github.vladbaton.exception.*;
 import com.github.vladbaton.repository.DocRepository;
 import com.github.vladbaton.repository.UserRepository;
 import com.github.vladbaton.resource.pojo.BuildDocumentRequestEntry;
@@ -12,10 +12,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.MultivaluedMap;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.*;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xwpf.usermodel.*;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -24,7 +20,6 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;

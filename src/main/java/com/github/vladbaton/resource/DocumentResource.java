@@ -1,23 +1,16 @@
 package com.github.vladbaton.resource;
 
-import com.github.vladbaton.entity.User;
 import com.github.vladbaton.exception.*;
 import com.github.vladbaton.resource.pojo.BuildDocumentRequest;
 import com.github.vladbaton.resource.pojo.DocForUserResponse;
 import com.github.vladbaton.resource.pojo.DocsForUserResponse;
 import com.github.vladbaton.service.DocService;
-import com.github.vladbaton.service.UserService;
-import io.smallrye.mutiny.Uni;
-import io.vertx.ext.web.RoutingContext;
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -26,7 +19,6 @@ import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStream;
 
 import static com.github.vladbaton.help.AuthChecker.checkBasicAuth;

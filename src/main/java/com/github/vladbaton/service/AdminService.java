@@ -2,11 +2,11 @@ package com.github.vladbaton.service;
 
 import com.github.vladbaton.entity.Doc;
 import com.github.vladbaton.entity.User;
-import com.github.vladbaton.exception.AdminDeletionException;
-import com.github.vladbaton.exception.FileDeletionException;
-import com.github.vladbaton.exception.UserNotFoundByIdException;
-import com.github.vladbaton.exception.UserNotFoundByUsernameException;
+import com.github.vladbaton.exception.*;
 import com.github.vladbaton.repository.UserRepository;
+import com.github.vladbaton.resource.dto.sortByDTO;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class AdminService {
@@ -66,7 +67,20 @@ public class AdminService {
         } catch (IOException ex) {
             throw new FileDeletionException();
         }
-
         userRepository.delete(user);
+    }
+
+    public List<User> getPaginatedUsers(Integer pageSize, Integer page, List<sortByDTO> orderBy) {
+        if(page == null || page < 0 || pageSize == null || pageSize < 1 || orderBy == null || orderBy.isEmpty()) {
+            throw new BadRequest();
+        }
+        Sort sort = Sort.empty();
+        orderBy.forEach(sortByDTO -> {
+            sort.and(sortByDTO.getField(),
+                    (sortByDTO.getOrder().equals("ASC")? Sort.Direction.Ascending: Sort.Direction.Descending));
+        });
+        return ((PanacheQuery<User>) userRepository.findAll(sort)).page(
+                page, pageSize
+        ).list();
     }
 }

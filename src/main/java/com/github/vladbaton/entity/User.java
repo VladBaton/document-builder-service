@@ -1,16 +1,16 @@
 package com.github.vladbaton.entity;
 
-import com.github.vladbaton.constraint.Username;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import io.quarkus.security.jpa.*;
+import io.quarkus.security.jpa.Password;
+import io.quarkus.security.jpa.PasswordType;
+import io.quarkus.security.jpa.Roles;
+import io.quarkus.security.jpa.UserDefinition;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 
 import java.util.Set;
 
 @Entity
-@Table(name = "USERS")
+@Table(name = "USERS", indexes = {@Index(name = "idx_randomstuff", columnList = "randomStuff")})
 @UserDefinition
 public class User extends PanacheEntityBase {
     @Column(name = "USERID")
@@ -33,7 +33,9 @@ public class User extends PanacheEntityBase {
     @Roles
     private String role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Long randomStuff;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Doc> docs;
 
     public String getPassword() {
@@ -82,5 +84,13 @@ public class User extends PanacheEntityBase {
 
     public void setDocs(Set<Doc> docs) {
         this.docs = docs;
+    }
+
+    public Long getRandomStuff() {
+        return randomStuff;
+    }
+
+    public void setRandomStuff(Long randomStuff) {
+        this.randomStuff = randomStuff;
     }
 }

@@ -1,5 +1,6 @@
 package com.github.vladbaton.resource;
 
+import com.github.vladbaton.resource.pojo.PaginatedUsersForAdminRequest;
 import com.github.vladbaton.resource.pojo.UserForAdminResponse;
 import com.github.vladbaton.resource.pojo.UsersForAdminResponse;
 import com.github.vladbaton.exception.AdminDeletionException;
@@ -64,5 +65,14 @@ public class AdminResource {
             throws UserNotFoundByIdException, AdminDeletionException {
         adminService.deleteUserById(id);
         return Response.status(Response.Status.GONE).build();
+    }
+
+    @Path("/paginated")
+    @GET
+    @RolesAllowed("Admin")
+    public Response getUsersPaginated(PaginatedUsersForAdminRequest request) {
+        return Response
+                .ok(new UsersForAdminResponse(adminService.getPaginatedUsers(request.getPageSize(), request.getPage(), request.getSortBy())))
+                .build();
     }
 }

@@ -9,10 +9,12 @@ import java.util.Set;
 public class UserForUserResponse {
     private String username;
     private String email;
+    private Long randomStuff;
 
     public UserForUserResponse(User user) {
         setEmail(user.getEmail());
         setUsername(user.getUsername());
+        setRandomStuff(user.getRandomStuff());
     }
 
     public String getUsername() {
@@ -29,5 +31,13 @@ public class UserForUserResponse {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setRandomStuff(Long randomStuff) {
+        this.randomStuff = randomStuff;
+    }
+
+    public Long getRandomStuff() {
+        return randomStuff;
     }
 }
