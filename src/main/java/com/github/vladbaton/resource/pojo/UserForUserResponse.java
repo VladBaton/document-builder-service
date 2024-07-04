@@ -1,5 +1,6 @@
 package com.github.vladbaton.resource.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.vladbaton.entity.Doc;
 import com.github.vladbaton.entity.User;
@@ -26,7 +27,7 @@ public class UserForUserResponse extends UserDTO {
         return super.getUpdatedDate();
     }
 
-    @JsonProperty
+    @JsonIgnore
     @Override
     public String getPassword() {
         return super.getPassword();

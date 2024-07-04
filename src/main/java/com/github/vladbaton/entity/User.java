@@ -1,5 +1,6 @@
 package com.github.vladbaton.entity;
 
+import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.security.jpa.Password;
 import io.quarkus.security.jpa.PasswordType;
@@ -25,7 +26,7 @@ public class User extends PanacheEntityBase {
     @Column(name = "USERNAME", nullable = false, unique = true)
     private String username;
 
-    @Password(PasswordType.CLEAR)
+    @Password(value = PasswordType.MCF)
     @Column(name = "USERPASSWORD", nullable = false)
     private String password;
 
@@ -70,7 +71,7 @@ public class User extends PanacheEntityBase {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = BcryptUtil.bcryptHash(password);
     }
 
     public void setUsername(String username) {
