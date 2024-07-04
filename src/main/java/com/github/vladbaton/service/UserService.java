@@ -36,6 +36,7 @@ public class UserService {
         newUser.setPassword(user.getPassword());
         newUser.setEmail(user.getEmail());
         newUser.setRole("User");
+        newUser.setRandomStuff(user.getRandomStuff());
         userRepository.persist(newUser);
         userRepository.flush();
     }
@@ -55,7 +56,7 @@ public class UserService {
     }
 
     @Transactional(rollbackOn = {ConstraintViolationException.class, WrongAuthorizationHeaderException.class})
-    public void updateUser(String username, User user)
+    public void updateUser(String username, UserDTO user)
             throws ConstraintViolationException, UserNotFoundByUsernameException {
         userRepository.findByUsername(username).ifPresentOrElse(
                 (foundUser) -> {

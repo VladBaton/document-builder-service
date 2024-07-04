@@ -1,23 +1,20 @@
 package com.github.vladbaton.resource;
 
 
-import com.github.vladbaton.resource.dto.UserDTO;
-import com.github.vladbaton.resource.pojo.RegistrationRequest;
-import com.github.vladbaton.resource.pojo.UpdateRequest;
-import com.github.vladbaton.resource.pojo.UserForUserResponse;
 import com.github.vladbaton.exception.UserNotFoundByUsernameException;
 import com.github.vladbaton.exception.WrongAuthorizationHeaderException;
+import com.github.vladbaton.resource.dto.UserDTO;
+import com.github.vladbaton.resource.pojo.UserForUserResponse;
+import com.github.vladbaton.service.UserService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
-import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import com.github.vladbaton.service.UserService;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -62,9 +59,9 @@ public class UserResource {
     @APIResponse(responseCode = "401", description = "Пользователь не авторизован в качестве юзера")
     @APIResponse(responseCode = "403", description = "Пользователь обращается к несуществующему API")
     @APIResponse(responseCode = "400", description = "Пользователь ввёл фигню")
-    public Response update(@HeaderParam("Authorization") String authorizationToken, UpdateRequest request)
+    public Response update(@HeaderParam("Authorization") String authorizationToken, @Valid UserDTO request)
             throws ConstraintViolationException, WrongAuthorizationHeaderException, UserNotFoundByUsernameException {
-        userService.updateUser(checkBasicAuth(authorizationToken)[0], request.getUser());
+        userService.updateUser(checkBasicAuth(authorizationToken)[0], request);
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 

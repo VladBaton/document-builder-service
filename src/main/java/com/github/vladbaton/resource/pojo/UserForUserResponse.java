@@ -1,43 +1,34 @@
 package com.github.vladbaton.resource.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.vladbaton.entity.Doc;
 import com.github.vladbaton.entity.User;
+import com.github.vladbaton.resource.dto.UserDTO;
 
+import java.util.Date;
 import java.util.Set;
 
 //Пользователь получает только username и email
-public class UserForUserResponse {
-    private String username;
-    private String email;
-    private Long randomStuff;
-
+public class UserForUserResponse extends UserDTO {
     public UserForUserResponse(User user) {
-        setEmail(user.getEmail());
-        setUsername(user.getUsername());
-        setRandomStuff(user.getRandomStuff());
+        super(user);
     }
 
-    public String getUsername() {
-        return username;
+    @JsonProperty
+    @Override
+    public Date getCreatedDate() {
+        return super.getCreatedDate();
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    @JsonProperty
+    @Override
+    public Date getUpdatedDate() {
+        return super.getUpdatedDate();
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setRandomStuff(Long randomStuff) {
-        this.randomStuff = randomStuff;
-    }
-
-    public Long getRandomStuff() {
-        return randomStuff;
+    @JsonProperty
+    @Override
+    public String getPassword() {
+        return super.getPassword();
     }
 }

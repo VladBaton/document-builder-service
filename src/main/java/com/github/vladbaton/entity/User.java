@@ -6,7 +6,10 @@ import io.quarkus.security.jpa.PasswordType;
 import io.quarkus.security.jpa.Roles;
 import io.quarkus.security.jpa.UserDefinition;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -37,6 +40,14 @@ public class User extends PanacheEntityBase {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Doc> docs;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Date createdDate;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private Date updatedDate;
 
     public String getPassword() {
         return password;
@@ -92,5 +103,21 @@ public class User extends PanacheEntityBase {
 
     public void setRandomStuff(Long randomStuff) {
         this.randomStuff = randomStuff;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
     }
 }

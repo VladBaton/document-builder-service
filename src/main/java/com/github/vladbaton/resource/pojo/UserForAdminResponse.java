@@ -1,23 +1,21 @@
 package com.github.vladbaton.resource.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.vladbaton.entity.User;
+import com.github.vladbaton.resource.dto.UserDTO;
 
-public class UserForAdminResponse extends UserForUserResponse {
-    private Long userId;
+public class UserForAdminResponse extends UserDTO {
     private Integer userFilesCount;
 
     public UserForAdminResponse(User user) {
         super(user);
-        setUserId(user.getUserId());
         setUserFilesCount(user.getDocs().size());
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    @Override
+    @JsonIgnore
+    public String getPassword() {
+        return super.getPassword();
     }
 
     public Integer getUserFilesCount() {
