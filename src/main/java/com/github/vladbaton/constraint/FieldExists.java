@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @Retention(RetentionPolicy.RUNTIME)
 @ApplicationScoped
 public @interface FieldExists {
-    String message() default "Указанного атрибута нет в таблице БД!";
+    String message() default "Указанного атрибута нет в таблице БД: ";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 

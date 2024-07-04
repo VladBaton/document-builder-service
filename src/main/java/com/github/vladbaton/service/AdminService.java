@@ -5,7 +5,7 @@ import com.github.vladbaton.entity.User;
 import com.github.vladbaton.exception.*;
 import com.github.vladbaton.repository.UserRepository;
 import com.github.vladbaton.resource.dto.SortOrder;
-import com.github.vladbaton.resource.dto.sortByDTO;
+import com.github.vladbaton.resource.dto.SortByDTO;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,10 +16,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 
 @ApplicationScoped
 public class AdminService {
@@ -71,7 +69,7 @@ public class AdminService {
         userRepository.delete(user);
     }
 
-    public List<User> getPaginatedUsers(int pageSize, int page, List<sortByDTO> orderBy) {
+    public List<User> getPaginatedUsers(int pageSize, int page, List<SortByDTO> orderBy) {
         if(page < 0 || pageSize < 1 || orderBy == null || orderBy.isEmpty()) {
             throw new BadRequest();
         }

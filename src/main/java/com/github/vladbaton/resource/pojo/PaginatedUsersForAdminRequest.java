@@ -1,10 +1,8 @@
 package com.github.vladbaton.resource.pojo;
 
 import com.github.vladbaton.constraint.NotNegative;
-import com.github.vladbaton.resource.dto.sortByDTO;
+import com.github.vladbaton.resource.dto.SortByDTO;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.util.List;
@@ -17,7 +15,7 @@ public class PaginatedUsersForAdminRequest {
     private int page;
 
     @Valid
-    private List<sortByDTO> sortBy;
+    private List<SortByDTO> sortBy;
 
     public int getPageSize() {
         return pageSize;
@@ -35,11 +33,11 @@ public class PaginatedUsersForAdminRequest {
         this.page = page;
     }
 
-    public List<sortByDTO> getSortBy() {
+    public List<SortByDTO> getSortBy() {
         return sortBy;
     }
 
-    public void setSortBy(List<sortByDTO> sortBy) {
+    public void setSortBy(List<SortByDTO> sortBy) {
         this.sortBy = sortBy;
     }
 }

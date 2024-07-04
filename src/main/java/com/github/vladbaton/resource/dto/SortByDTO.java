@@ -4,7 +4,7 @@ import com.github.vladbaton.constraint.FieldExists;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class sortByDTO {
+public class SortByDTO {
     @NotBlank
     @NotNull
     @FieldExists
