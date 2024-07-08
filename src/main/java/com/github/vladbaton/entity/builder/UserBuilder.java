@@ -12,7 +12,7 @@ public class UserBuilder {
         return this;
     }
 
-    public UserBuilder setName(final String name) {
+    public UserBuilder setUsername(final String name) {
         user.setUsername(name);
         return this;
     }
@@ -39,6 +39,31 @@ public class UserBuilder {
 
     public UserBuilder setUpdated(final Date updated) {
         user.setUpdatedDate(updated);
+        return this;
+    }
+
+    public UserBuilder setName(final String name) {
+        user.setName(name);
+        return this;
+    }
+
+    public UserBuilder setSurname(final String surname) {
+        user.setSurname(surname);
+        return this;
+    }
+
+    public UserBuilder setPatronymic(final String patronymic) {
+        user.setPatronymic(patronymic);
+        return this;
+    }
+
+    public UserBuilder setPhone(final Long phone) {
+        user.setPhone(phone);
+        return this;
+    }
+
+    public UserBuilder setDirector (final Long director) {
+        user.setDirector(director);
         return this;
     }
 

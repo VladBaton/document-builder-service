@@ -1,28 +1,15 @@
 package com.github.vladbaton.service;
 
-import com.github.vladbaton.entity.Doc;
 import com.github.vladbaton.entity.User;
+import com.github.vladbaton.entity.builder.UserBuilder;
 import com.github.vladbaton.exception.*;
-import com.github.vladbaton.repository.DocRepository;
 import com.github.vladbaton.repository.UserRepository;
 import com.github.vladbaton.resource.dto.UserDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.ws.rs.core.MultivaluedMap;
-import org.apache.poi.util.IOUtils;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.*;
+import jakarta.validation.Valid;
 
 @ApplicationScoped
 public class UserService {
@@ -30,12 +17,18 @@ public class UserService {
     UserRepository userRepository;
 
     @Transactional(rollbackOn = ConstraintViolationException.class)
-    public void registerUser(UserDTO user) throws ConstraintViolationException {
-        User newUser = new User();
-        newUser.setUsername(user.getUsername());
-        newUser.setPassword(user.getPassword());
-        newUser.setEmail(user.getEmail());
-        newUser.setRole("User");
+    public void registerUser(@Valid UserDTO user) throws ConstraintViolationException {
+        User newUser = (new UserBuilder())
+                .setUsername(user.getUsername())
+                .setPassword(user.getPassword())
+                .setEmail(user.getEmail())
+                .setName(user.getName())
+                .setSurname(user.getSurname())
+                .setPatronymic(user.getPatronymic())
+                .setPhone(user.getPhone())
+                .setDirector(user.getDirectorId())
+                .setRole("User")
+                .build();
         userRepository.persistAndFlush(newUser);
     }
 

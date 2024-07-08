@@ -6,12 +6,19 @@ import com.github.vladbaton.exception.FileNotFoundException;
 import com.github.vladbaton.exception.*;
 import com.github.vladbaton.repository.DocRepository;
 import com.github.vladbaton.repository.UserRepository;
+import com.github.vladbaton.resource.dto.UserDTO;
+import com.github.vladbaton.resource.dto.builder.UserDTOBuilder;
 import com.github.vladbaton.resource.pojo.BuildDocumentRequestEntry;
 import com.github.vladbaton.resource.pojo.ReplacementEntry;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.MultivaluedMap;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xwpf.usermodel.*;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -34,6 +41,9 @@ public class DocService {
 
     @Inject
     UserRepository userRepository;
+
+    @Inject
+    UserService userService;
 
     @Transactional
     public void uploadDoc(MultipartFormDataInput input, String username)
@@ -106,6 +116,56 @@ public class DocService {
             throw new DocumentBuildingError(filename);
         }
         return outputStream;
+    }
+
+    public void searchForSlaves(MultipartFormDataInput inputForm) {
+        Map<String, List<InputPart>> uploadForm = inputForm.getFormDataMap();
+        if (uploadForm.get("slaves") == null) {
+            throw new FailedToUploadFileException();
+        }
+        for (InputPart inputPart : uploadForm.get("slaves")) {
+            String filename = getFilename(inputPart.getHeaders());
+            if(filename == null || !filename.endsWith(".xlsx"))
+                throw new FailedToUploadFileException();
+            try (HSSFWorkbook workbook = readWorkbook(inputPart)) {
+                HSSFSheet sheet = workbook.getSheetAt(0);
+                if(sheet.getRow(0).getCell(0).getRichStringCellValue() == null) {
+                    throw new FailedToUploadFileException();
+                }
+                for(int i = 1, iend = sheet.getLastRowNum(); i <= iend; i++) {
+                    Row row = sheet.getRow(i);
+                    String masterEmail = row.getCell(5).getStringCellValue();
+                    User foundMaster = userRepository.findByEmail(masterEmail).orElseThrow();
+                    String email = row.getCell(4).getStringCellValue();
+                    if(!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]+")) {
+                        throw new FailedToUploadFileException();
+                    }
+                    UserDTO userDTO = new UserDTOBuilder()
+                            .setSurname(row.getCell(0).getStringCellValue())
+                            .setName(row.getCell(1).getStringCellValue())
+                            .setPatronymic(row.getCell(2).getStringCellValue())
+                            .setPhone(Long.parseLong(row.getCell(3).getStringCellValue()))
+                            .setEmail(email)
+                            .setDirector(foundMaster.getUserId())
+                            .setUsername(email.split("@")[0])
+                            .setRole("Slave")
+                            .build();
+                    userService.registerUser(userDTO);
+                }
+            } catch (Exception ex)
+            {
+                throw new FailedToUploadFileException(filename);
+            }
+        }
+    }
+
+    private HSSFWorkbook readWorkbook(InputPart inputPart) throws FailedToUploadFileException {
+        try {
+            InputStream inputStream = inputPart.getBody(InputStream.class, null);
+            return new HSSFWorkbook(inputStream);
+        } catch (IOException ex) {
+            throw new FailedToUploadFileException();
+        }
     }
 
     private String getFilename(MultivaluedMap<String, String> header) {

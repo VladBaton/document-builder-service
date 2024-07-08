@@ -5,6 +5,7 @@ import com.github.vladbaton.exception.UserNotFoundByUsernameException;
 import com.github.vladbaton.exception.WrongAuthorizationHeaderException;
 import com.github.vladbaton.resource.dto.UserDTO;
 import com.github.vladbaton.resource.pojo.UserForUserResponse;
+import com.github.vladbaton.service.DocService;
 import com.github.vladbaton.service.UserService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -18,6 +19,8 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import static com.github.vladbaton.help.AuthChecker.checkBasicAuth;
 
@@ -29,6 +32,9 @@ import static com.github.vladbaton.help.AuthChecker.checkBasicAuth;
 public class UserResource {
     @Inject
     UserService userService;
+
+    @Inject
+    DocService docService;
 
     @POST
     @PermitAll
@@ -75,5 +81,17 @@ public class UserResource {
     public Response read(@HeaderParam("Authorization") String authorizationToken)
             throws WrongAuthorizationHeaderException {
         return Response.status(Response.Status.OK).entity(new UserForUserResponse(userService.readUser(checkBasicAuth(authorizationToken)[0]))).build();
+    }
+
+    @POST
+    @Path("/slaves/upload")
+    @RolesAllowed("User")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchForSlaves(@MultipartForm MultipartFormDataInput inputForm,
+                                    @HeaderParam("Authorization") String authorizationToken)
+            throws WrongAuthorizationHeaderException {
+        docService.searchForSlaves(inputForm);
+        return Response.status(Response.Status.CREATED).build();
     }
 }

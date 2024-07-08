@@ -26,6 +26,15 @@ public class User extends PanacheEntityBase {
     @Column(name = "USERNAME", nullable = false, unique = true)
     private String username;
 
+    @Column(name = "NAME")
+    private String name;
+
+    @Column(name = "SURNAME")
+    private String surname;
+
+    @Column(name = "PATRONYMIC")
+    private String patronymic;
+
     @Password(value = PasswordType.MCF)
     @Column(name = "PASSWORD", nullable = false)
     private String password;
@@ -48,12 +57,42 @@ public class User extends PanacheEntityBase {
     @Column(nullable = false)
     private Date updatedDate;
 
+    @Column(name = "PHONE")
+    private Long phone;
+
+    @Column (name = "director", nullable = true)
+    private Long director;
+
     public String getPassword() {
         return password;
     }
 
     public String getUsername() {
         return username;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getPatronymic() {
+        return patronymic;
+    }
+
+    public void setPatronymic(String patronymic) {
+        this.patronymic = patronymic;
     }
 
     public Long getUserId() {
@@ -110,6 +149,22 @@ public class User extends PanacheEntityBase {
 
     public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    public Long getPhone() {
+        return phone;
+    }
+
+    public void setPhone(Long phone) {
+        this.phone = phone;
+    }
+
+    public Long getDirector() {
+        return director;
+    }
+
+    public void setDirector(Long director) {
+        this.director = director;
     }
 
     @Override

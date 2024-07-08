@@ -3,9 +3,9 @@ package com.github.vladbaton.resource.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.vladbaton.constraint.PhoneNumber;
 import com.github.vladbaton.constraint.Username;
 import com.github.vladbaton.entity.User;
-import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -37,6 +37,22 @@ public class UserDTO {
     @JsonIgnoreProperties
     private Date updatedDate;
 
+    @Username
+    private String name;
+
+    @Username
+    private String surname;
+
+    @Username
+    private String patronymic;
+
+    @PhoneNumber
+    private Long phone;
+
+    private Long directorId;
+
+    private String role;
+
     public UserDTO() {
 
     }
@@ -48,6 +64,12 @@ public class UserDTO {
         setEmail(user.getEmail());
         setCreatedDate(user.getCreatedDate());
         setUpdatedDate(user.getUpdatedDate());
+        setName(user.getName());
+        setSurname(user.getSurname());
+        setPatronymic(user.getPatronymic());
+        setPhone(user.getPhone());
+        setDirectorId(user.getDirector());
+        setRole(user.getRole());
     }
 
     public Long getUserId() {
@@ -98,5 +120,53 @@ public class UserDTO {
 
     public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getPatronymic() {
+        return patronymic;
+    }
+
+    public void setPatronymic(String patronymic) {
+        this.patronymic = patronymic;
+    }
+
+    public Long getPhone() {
+        return phone;
+    }
+
+    public void setPhone(Long phone) {
+        this.phone = phone;
+    }
+
+    public Long getDirectorId() {
+        return directorId;
+    }
+
+    public void setDirectorId(Long directorId) {
+        this.directorId = directorId;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
