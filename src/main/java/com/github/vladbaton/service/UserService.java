@@ -36,9 +36,7 @@ public class UserService {
         newUser.setPassword(user.getPassword());
         newUser.setEmail(user.getEmail());
         newUser.setRole("User");
-        newUser.setRandomStuff(user.getRandomStuff());
-        userRepository.persist(newUser);
-        userRepository.flush();
+        userRepository.persistAndFlush(newUser);
     }
 
     @Transactional(rollbackOn = UserNotFoundByUsernameException.class)
@@ -73,30 +71,6 @@ public class UserService {
 
     public User readUser(String username) throws UserNotFoundByUsernameException {
         return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundByUsernameException(username));
-    }
-
-    @Transactional
-    public void addTestUsers() {
-        Random random = new Random();
-        String defaultName = "test";
-        String defaultPassword = "123ABCabc";
-        for(int i = 0; i < 10000; ++i) {
-            User user = new User();
-            user.setUsername(defaultName + (10000 - i));
-            user.setPassword(defaultPassword + random.nextInt(1000));
-            user.setEmail(defaultName + (10000 - i) + "@test.com");
-            user.setRole("User");
-            user.setRandomStuff(random.nextLong());
-            userRepository.persistAndFlush(user);
-        }
-    }
-
-    public List<User> findByPassword(String password) {
-        return userRepository.findByPassword(password);
-    }
-
-    public List<User> findByRandomStuff(long randomStuff) {
-        return userRepository.findByRandomStuff(randomStuff);
     }
 }
 

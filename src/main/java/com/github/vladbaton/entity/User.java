@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
-@Table(name = "USERS", indexes = {@Index(name = "idx_randomstuff", columnList = "randomStuff")})
+@Table(name = "USERS")
 @UserDefinition
 public class User extends PanacheEntityBase {
     @Column(name = "USERID")
@@ -27,17 +27,15 @@ public class User extends PanacheEntityBase {
     private String username;
 
     @Password(value = PasswordType.MCF)
-    @Column(name = "USERPASSWORD", nullable = false)
+    @Column(name = "PASSWORD", nullable = false)
     private String password;
 
-    @Column(name = "USEREMAIL", nullable = false, unique = true)
+    @Column(name = "EMAIL", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "USERROLE")
+    @Column(name = "ROLE", nullable = false)
     @Roles
     private String role;
-
-    private Long randomStuff;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Doc> docs;
@@ -98,14 +96,6 @@ public class User extends PanacheEntityBase {
         this.docs = docs;
     }
 
-    public Long getRandomStuff() {
-        return randomStuff;
-    }
-
-    public void setRandomStuff(Long randomStuff) {
-        this.randomStuff = randomStuff;
-    }
-
     public Date getCreatedDate() {
         return createdDate;
     }
@@ -120,5 +110,30 @@ public class User extends PanacheEntityBase {
 
     public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    @Override
+    public int hashCode() {
+        return userId.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == null) {
+            return false;
+        }
+        if (!(o instanceof User user)) {
+            return false;
+        }
+        if(o.hashCode() != this.hashCode()) {
+            return false;
+        }
+        if (this == o) {
+            return true;
+        }
+        return this.userId.equals(user.userId) && this.username.equals(user.username) &&
+                this.email.equals(user.email) && this.role.equals(user.role)
+                && this.createdDate.equals(user.createdDate) && this.updatedDate.equals(user.updatedDate) &&
+                this.docs.equals(user.docs);
     }
 }

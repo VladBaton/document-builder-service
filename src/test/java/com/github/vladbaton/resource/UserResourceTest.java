@@ -50,7 +50,6 @@ class UserResourceTest {
         user.setPassword("ABCabcABC123123");
         user.setEmail("ya@ya.ya");
         user.setRole("User");
-        user.setRandomStuff(234L);
         user.setCreatedDate(new Date());
         user.setUpdatedDate(new Date());
 
@@ -70,7 +69,9 @@ class UserResourceTest {
         userDTO.setUsername("username");
         userDTO.setPassword("password");
         userDTO.setEmail("email");
-        assertThrows(ResteasyViolationExceptionImpl.class, () -> userResource.register(userDTO));
+        assertThrows(ResteasyViolationExceptionImpl.class,
+                () -> userResource.register(userDTO),
+                "Ожидалась ошибка валидации, а получил ты невесть что");
     }
 
     @Test
@@ -81,7 +82,9 @@ class UserResourceTest {
         userDTO.setEmail("email@email.email");
         Response response = userResource.register(userDTO);
         assertNotNull(response);
-        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        assertEquals(Response.Status.CREATED.getStatusCode(),
+                response.getStatus(),
+                "Ожидалось успешное создание пользователя с соответсвующим кодом");
     }
 
     @TestSecurity(user = "username", roles = {"User"})

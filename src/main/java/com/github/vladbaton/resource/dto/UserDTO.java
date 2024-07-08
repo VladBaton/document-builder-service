@@ -23,15 +23,13 @@ public class UserDTO {
     @Username
     private String username;
 
-    @com.github.vladbaton.constraint.Password
+    @com.github.vladbaton.constraint.Password(message = "Дружок-пирожок, тобой был введён неправильный пароль: ")
     @NotBlank
     private String password;
 
     @NotBlank
-    @Email
+    @Email(message = "Дружок-пирожок, тобой был введён неправильный email")
     private String email;
-
-    private Long randomStuff;
 
     @JsonIgnoreProperties
     private Date createdDate;
@@ -48,7 +46,6 @@ public class UserDTO {
         setUsername(user.getUsername());
         setPassword(user.getPassword());
         setEmail(user.getEmail());
-        setRandomStuff(user.getRandomStuff());
         setCreatedDate(user.getCreatedDate());
         setUpdatedDate(user.getUpdatedDate());
     }
@@ -85,14 +82,6 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Long getRandomStuff() {
-        return randomStuff;
-    }
-
-    public void setRandomStuff(Long randomStuff) {
-        this.randomStuff = randomStuff;
     }
 
     public Date getCreatedDate() {
