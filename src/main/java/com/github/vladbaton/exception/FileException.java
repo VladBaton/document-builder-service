@@ -5,8 +5,8 @@ public class FileException extends RuntimeException {
 
     public FileException() {}
 
-    public FileException(String filename) {
-        this.filename = filename.substring(filename.lastIndexOf("\\") + 1);
+    public FileException(String message) {
+        super(message);
     }
 
     public FileException(String message, String filename) {

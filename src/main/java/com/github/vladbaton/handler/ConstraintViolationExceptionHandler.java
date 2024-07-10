@@ -14,9 +14,16 @@ import org.eclipse.microprofile.faulttolerance.Timeout;
 public class ConstraintViolationExceptionHandler implements ExceptionMapper<ConstraintViolationException> {
     @Override
     public Response toResponse(ConstraintViolationException e) {
+        String message = e.getMessage();
+        if (message == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Ошибка валидации").build();
+        }
+        int errTextBegin = message.indexOf("ОШИБКА:");
+        int errTextEnd = message.indexOf("Call ");
         return Response.status(Response.Status.BAD_REQUEST)
                 .entity(
-                        "Ошибка валидации: " + e.getErrorMessage()
+                        "Ошибка валидации: " +
+                        (errTextBegin > 0 && errTextEnd > 0 ? message.substring(errTextBegin, errTextEnd) : message)
                 )
                 .build();
     }

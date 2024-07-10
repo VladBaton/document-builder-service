@@ -20,7 +20,7 @@ public class UserDTO {
 
     @NotNull
     @NotBlank
-    @Username
+    @Username(message = "никнейм пользователя должен содержать только буквы")
     private String username;
 
     @com.github.vladbaton.constraint.Password(message = "Дружок-пирожок, тобой был введён неправильный пароль: ")
@@ -40,13 +40,13 @@ public class UserDTO {
     @Username
     private String name;
 
-    @Username
+    @Username(message = "Фамилия пользователя должна содержать только буквы")
     private String surname;
 
-    @Username
+    @Username(message = "Отчество пользователя должно содержать только буквы")
     private String patronymic;
 
-    @PhoneNumber
+    @PhoneNumber(message = "Неправильный формат номера телефона")
     private Long phone;
 
     private Long directorId;
@@ -154,13 +154,16 @@ public class UserDTO {
         this.phone = phone;
     }
 
+    @JsonProperty
     public Long getDirectorId() {
         return directorId;
     }
 
+    @JsonIgnoreProperties
     public void setDirectorId(Long directorId) {
         this.directorId = directorId;
     }
+
 
     public String getRole() {
         return role;

@@ -82,16 +82,4 @@ public class UserResource {
             throws WrongAuthorizationHeaderException {
         return Response.status(Response.Status.OK).entity(new UserForUserResponse(userService.readUser(checkBasicAuth(authorizationToken)[0]))).build();
     }
-
-    @POST
-    @Path("/slaves/upload")
-    @RolesAllowed("User")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response searchForSlaves(@MultipartForm MultipartFormDataInput inputForm,
-                                    @HeaderParam("Authorization") String authorizationToken)
-            throws WrongAuthorizationHeaderException {
-        docService.searchForSlaves(inputForm);
-        return Response.status(Response.Status.CREATED).build();
-    }
 }

@@ -12,7 +12,7 @@ public class FailedToUploadFileExceptionHandler implements ExceptionMapper<Faile
     @Override
     public Response toResponse(FailedToUploadFileException e) {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(String.format("Не удалось загрузить файл %s", e.getFilename()))
+                .entity(String.format("Не удалось загрузить файл %s по причине %s", e.getFilename(), e.getMessage()))
                 .build();
     }
 }
